@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Houston Staff Clock System</title>
+  <style>
+    body {
+      background-color: #2b2d31;
+      color: #f2f3f5;
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+      padding: 2rem;
+    }
+    input, button {
+      padding: 0.6rem;
+      margin: 0.5rem;
+      border-radius: 6px;
+      border: none;
+      font-size: 1rem;
+    }
+    input {
+      width: 300px;
+    }
+    button {
+      background-color: #5865f2;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>👮 Houston Staff Clock System</h1>
+
+  <input type="text" id="discordUsername" placeholder="Discord Username (e.g. user#0001)" />
+  <br>
+  <button onclick="clockIn()">✅ Clock In</button>
+  <button onclick="clockOut()">⛔ Clock Out + PDF</button>
+
+  <p id="logStatus"></p>
+
+  <script>
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbzPcohRJltob1ENfwQYJTo6CTjeK-Az0JQhTbuG1dckNAtm-6uyFiOLpAziOy7seZ0iVw/exec";
+
+    function sendToSheet(action) {
+      const username = document.getElementById('discordUsername').value.trim();
+      if (!username) return alert("Please enter your Discord username.");
+
+      fetch(SHEET_URL, {
+        method: "POST",
+        body: JSON.stringify({ username, action }),
+        headers: { "Content-Type": "application/json" }
+      })
+      .then(res => res.text())
+      .then(msg => document.getElementById("logStatus").innerText = `✔️ ${action} saved!`)
+      .catch(err => alert("Error logging: " + err));
+    }
+
+    function clockIn() {
+      sendToSheet("Clocked In");
+    }
+
+    function clockOut() {
+      sendToSheet("Clocked Out");
+      window.print(); // auto PDF
+    }
+  </script>
+</body>
+</html>
