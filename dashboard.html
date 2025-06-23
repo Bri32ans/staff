@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Houston Staff Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/tabletop@1.6.0/tabletop.min.js"></script>
+  <style>
+    body {
+      background-color: #1e1f22;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #2b2d31;
+      margin-top: 1rem;
+    }
+    th, td {
+      padding: 0.75rem;
+      border: 1px solid #444;
+      text-align: center;
+    }
+    th {
+      background-color: #5865f2;
+      color: #fff;
+    }
+    button {
+      background: #5865f2;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      margin-top: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>📊 Houston Staff Admin Dashboard</h1>
+  <p>This dashboard displays all clock-in/out activity.</p>
+  <table id="logTable">
+    <tr><th>Timestamp</th><th>Username</th><th>Action</th></tr>
+  </table>
+  <button onclick="downloadCSV()">📥 Download CSV</button>
+
+  <script>
+    const SHEET_KEY = "1k1O1ZwFBQuukawH4Y4ugXa8_g1NCQk1LjXVIeHXwDVI
+"; // From publish-to-web link
+
+    window.onload = function () {
+      Tabletop.init({
+        key: SHEET_KEY,
+        callback: showData,
+        simpleSheet: true
+      });
+    };
+
+    function showData(data) {
+      const table = document.getElementById("logTable");
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${row.Timestamp}</td><td>${row.Username}</td><td>${row.Action}</td>`;
+        table.appendChild(tr);
+      });
+    }
+
+    function downloadCSV() {
+      const rows = [...document.querySelectorAll("table tr")].map(row =>
+        [...row.children].map(td => td.innerText).join(",")
+      ).join("\n");
+
+      const blob = new Blob([rows], { type: "text/csv" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "houston_staff_logs.csv";
+      link.click();
+    }
+  </script>
+</body>
+</html>
